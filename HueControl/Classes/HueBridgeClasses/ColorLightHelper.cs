@@ -34,7 +34,6 @@ namespace HueControl
             DateParseHandling = DateParseHandling.None,
         };
     }
-
     #endregion
 
     #region ChangeColor
