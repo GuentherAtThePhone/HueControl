@@ -13,9 +13,9 @@ namespace HueControl.Classes.HueBridgeClasses
     internal class HueLogic
     {
 
-        public static string BridgeIP;
+        public static string? BridgeIP;
 
-        public static string Usercode;
+        public static string? Usercode;
 
         private const string APIAddressTemplate = "http://{0}/api";
         private const string BodyTemplate = "{{\"devicetype\":\"{0}\"}}";
@@ -79,8 +79,10 @@ namespace HueControl.Classes.HueBridgeClasses
                 string json = reader.ReadToEnd();
 
                 var result = ResultHelper.FromJson(json);
-                Usercode = result.First().Success.Username;
-
+                if(result.First().Success != null)
+                {
+                    Usercode = result.First().Success.Username;                    
+                }
                 return json;
             }
         }
