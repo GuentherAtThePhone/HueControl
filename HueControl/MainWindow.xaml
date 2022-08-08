@@ -318,12 +318,13 @@
                 </DockPanel>
             </Grid>
 
-            <Grid  x:Name="GridCreateUser" Visibility="Visible" Background="White">
+            <Grid  x:Name="GridCreateUser" Visibility="Collapsed" Background="White">
                 <StackPanel>
                     <Label x:Name="lblCreateUserState" Content="Searching for Hue Bridge" HorizontalAlignment="Center" FontSize="20" FontWeight="SemiBold" Margin="0,50,0,0"/>
                     <Image Source="C:\Users\Coolj\source\repos\HueTest\HueTest\Pictures\HueBridge.png" Stretch="Fill" MaxHeight="550" MaxWidth="550"/>
                     <TextBox x:Name="TbIpCreateUser" Text="" HorizontalAlignment="Center" FontSize="18" MinWidth="100"/>
-                    <Button Content=" Cancel " HorizontalAlignment="Right" FontSize="16" FontWeight="SemiBold" Margin="20"/>
+                    <Button x:Name="BtnCreateUserContinue" Content=" Continue " HorizontalAlignment="Center" Margin="10" FontSize="16" FontWeight="Medium" Click="BtnCreateUserContinue_Click"/>
+                    <Button x:Name="BtnCreateUserCancel" Content=" Cancel " HorizontalAlignment="Right" FontSize="16" FontWeight="SemiBold" Margin="20" Click="BtnCreateUserCancel_Click"/>
                 </StackPanel>
 
             </Grid>
