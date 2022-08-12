@@ -1,1 +1,108 @@
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>Among Us Clicker</title>
+    <br>
+    <br>
+    <br>
+    <br>
+    <h1 class="centerd" id="0">Among Us Clicker - Zum Scheitern verurteilt</h1>
+	<link rel="stylesheet" href="style.css">
+	<script src="code.js"></script>
 
+  </head> 
+  
+  <body>
+        
+     <br>
+    <h3 class="spacing centerd" id="1">
+     Informatik Projekt 2022 - Ahmet, Jakob, Lennard
+    </h3>
+    <br>
+    <br>
+    <br>
+    <br>
+    
+ <div class="clicker" id="2">
+ 	<button class="gif" id="3" type="button">
+ 		<img id="btn" OnClick="onClick()" src="AmongUsTwerk_Picture.png">
+ 	</button> 
+	 
+ </div> 
+ <div class="counterdiv" id="4">
+   <table id="13" class="counter" style="width:100%">
+   <th id="14">
+  <p id="4.2">Klicks: <a id="clicks">0</a></p>
+  </th>
+  <th id="15">
+  <p id="4.25"> Klicks pro Sekunde: <a id="cps">0</a></p>
+</th>
+<th id="16">
+  <p id="4.3" >Multiplikator: <a id="pMulti">1</a></p>
+  </th>
+  </table>
+  </div>
+
+   <br>
+   </br>
+
+   <div id ="5" class="shop">
+     <table class="shoptable" sytle="width:100%">
+       <tr id="17">
+       <th id="18">
+   	<button id="cactus_pic" type="button">
+   		<img id="6" OnClick="one_Click()" src="Cursor_Cactus.png" >
+   	</button>
+     </th>
+     <th>
+     <button id="neon_pic" type="button">
+      <img id="7" OnClick="two_Click()" src="Cursor_Neon.png" >
+    </button>
+    </th>
+    <th id="19">
+    <button id="galaxy_pic" type="button">
+      <img id="8" OnClick="three_Click()" src="Cursor_Galaxy.png" >
+    </button>
+    </th>
+    <th id="20">
+    <button id="knife_pic" type="button">
+      <img id="9" OnClick="four_Click()" src="Cursor_Knife.png" >
+    </button>
+    </th>
+    </tr>
+    <br>
+    <tr id="21">
+      <td id="td1">100</td>
+      <td id="td2">1000</td>
+      <td id="td3">25000</td>
+      <td id="td4">100000</td>
+    </tr>
+    </table>
+   </div> 
+   
+   <button id="asw">
+     <img id="10" OnClick="impostor_click()" src="">
+   </button>
+
+  <p class="error" id="11"><a class="red" id="12"></a></p>
+
+  <button type="button" OnClick="restart()" id="rebutton">Neustart</button>
+  <p id="counter" class="spacing">Event Zeit uebrig: <a id="counterNum">00:00</a></p>
+
+  <script>
+    function playMusic(){
+    music.play();
+    }
+    </script>
+  <html>
+    <audio id="music" loop src="Informatik_Amogus.mp3" autoplay type="audio/mpeg"> </audio>
+    </html>
+    <button onclick="stopmusic()" id="musicstop">
+      Musik aus
+    </button>
+    <p id="impressum">
+      <a href="Impressum.html">Impressum</a>
+    </p>
+
+  </body>
+</html>
