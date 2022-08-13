@@ -20,9 +20,9 @@ using HueControl.Classes.Others;
 namespace HueControl
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaktionslogik für HueControlTest.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class HueControlTest : Window
     {
 
         List<LightHelper> lights;
@@ -30,24 +30,22 @@ namespace HueControl
 
         bool loop = false;
 
-        public MainWindow()
+        public HueControlTest()
         {
             InitializeComponent();
 
-            
             txtUsername.Text = Properties.Settings.Default.Usercode;
             txtIp.Text = Properties.Settings.Default.BridgeIP;
 
             HueLogic.Usercode = txtUsername.Text;
             HueLogic.BridgeIP = txtIp.Text;
 
-            if(HueLogic.Usercode == "" | HueLogic.Usercode == null | HueLogic.BridgeIP == "" | HueLogic.BridgeIP == null)
+            if (HueLogic.Usercode == "" | HueLogic.Usercode == null | HueLogic.BridgeIP == "" | HueLogic.BridgeIP == null)
             {
                 // create / search
-                
-                if(HueLogic.BridgeIP == "" | HueLogic.BridgeIP == null)
+
+                if (HueLogic.BridgeIP == "" | HueLogic.BridgeIP == null)
                 {
-                    ScLeftSideTop.IsEnabled = false;
                     GridSettings.Visibility = Visibility.Visible;
                     GridRoomsOverview.Visibility = Visibility.Collapsed;
                     GridSingleRoom.Visibility = Visibility.Collapsed;
@@ -98,8 +96,8 @@ namespace HueControl
                 Thread t = new Thread(StartApplication);
                 t.Start();
             }
-
         }
+
 
         #region Selection Changed
 
@@ -717,7 +715,7 @@ namespace HueControl
             catch (Exception) { }
         }
 
-        
+
 
         // SingleRoom IsOnChanged
         private void CbIsOnSingleRoom_Click(object sender, RoutedEventArgs e)
@@ -816,10 +814,7 @@ namespace HueControl
         private void ImgSettings_MouseDown(object sender, MouseButtonEventArgs e)
         {
             GridSettings.Visibility = Visibility.Visible;
-            GridRoomsOverview.Visibility = Visibility.Collapsed;
-            GridSingleRoom.Visibility = Visibility.Collapsed;
-            GridSingleLight.Visibility = Visibility.Collapsed;
-            GridLightsOverview.Visibility = Visibility.Collapsed;
+            GridMainView.Visibility = Visibility.Collapsed;
         }
 
 
@@ -853,7 +848,7 @@ namespace HueControl
 
         private void BtnCreateUser_Click(object sender, RoutedEventArgs e)
         {
-            
+
             GridCreateUser.Visibility = Visibility.Visible;
             TbIpCreateUser.Visibility = Visibility.Collapsed;
 
@@ -865,13 +860,13 @@ namespace HueControl
 
             Thread thread = new Thread(CreatingUser);
             thread.Start();
-            
+
         }
 
         private void CreatingUser()
         {
             // Search IP
-            
+
             SearchBridge();
 
             Dispatcher.BeginInvoke(new System.Action(delegate
@@ -945,7 +940,7 @@ namespace HueControl
                         result = HueLogic.ConnectBridge("HueControlID" + i.ToString());
                     }
                     catch (Exception) { }
-                    if(!result.Contains("link button not pressed"))
+                    if (!result.Contains("link button not pressed"))
                     {
                         Dispatcher.BeginInvoke(new System.Action(delegate
                         {
@@ -953,7 +948,7 @@ namespace HueControl
                             MessageBox.Show(result);
                             loop = false;
                         }));
-                    }                        
+                    }
                 }
                 catch (Exception) { }
             }
@@ -971,7 +966,7 @@ namespace HueControl
 
                 lblCreateUserState.Content = "Searching for Hue Bridge";
                 TbIpCreateUser.Visibility = Visibility.Collapsed;
-                
+
                 BtnCreateUserContinue.IsEnabled = true;
                 BtnCreateUserContinue.Visibility = Visibility.Collapsed;
             }));
@@ -1137,7 +1132,7 @@ namespace HueControl
 
         private void StartApplication()
         {
-            Dispatcher.BeginInvoke(new System.Action (delegate{
+            Dispatcher.BeginInvoke(new System.Action(delegate {
 
                 // Connection Check
                 string result2 = "";
@@ -1173,8 +1168,6 @@ namespace HueControl
                     GridLightsOverview.Visibility = Visibility.Collapsed;
                     GridSettings.Visibility = Visibility.Collapsed;
 
-                    ScLeftSideTop.IsEnabled = true;
-
                     Cursor = Cursors.Arrow;
                 }
                 else
@@ -1182,9 +1175,8 @@ namespace HueControl
                     // Username not correct
                 }
 
-            }));            
+            }));
         }
 
-        
     }
 }

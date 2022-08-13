@@ -134,7 +134,7 @@
         </Grid.RowDefinitions>
 
         <!--#region ListMenu Left Side Top-->
-        <ScrollViewer Grid.Column="0" Grid.RowSpan="2" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+        <ScrollViewer x:Name="ScLeftSideTop" Grid.Column="0" Grid.RowSpan="2" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
             <StackPanel Background="#252525">
 
                 <ToggleButton Style="{DynamicResource ToggleButtonStyle1}"
@@ -283,7 +283,12 @@
         <!--#endregion-->
 
         <Grid Background="#252525" Grid.Column="0" Grid.Row="1">
-            <Image x:Name="ImgSettings" Source="C:\Users\Coolj\source\repos\HueTest\HueTest\Pictures\settings.png" MouseDown="ImgSettings_MouseDown" HorizontalAlignment="Right" Margin="4" Cursor="Hand"/>
+            <Image x:Name="ImgSettings"
+                   Source="Media/Pictures/settings.png" 
+                   MouseDown="ImgSettings_MouseDown" 
+                   HorizontalAlignment="Right" 
+                   Margin="4" 
+                   Cursor="Hand"/>
         </Grid>
 
 
@@ -312,9 +317,9 @@
                 </StackPanel>
 
                 <DockPanel HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="10">
-                    <Button Content="Close" Margin="2" FontSize="14"/>
-                    <Button Content="Apply" Margin="2" FontSize="14"/>
-                    <Button Content="Apply and Close" Margin="2" FontSize="14"/>
+                    <Button x:Name="BtnSettingsClose" Content="Close" Margin="2" FontSize="14" Click="BtnSettingsClose_Click"/>
+                    <Button x:Name="BtnSettingsApply" Content="Apply" Margin="2" FontSize="14" Click="BtnSettingsApply_Click"/>
+                    <Button x:Name="BtnSettingsApllyClose" Content="Apply and Close" Margin="2" FontSize="14" Click="BtnSettingsApllyClose_Click"/>
                 </DockPanel>
             </Grid>
 
