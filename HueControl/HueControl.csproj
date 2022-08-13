@@ -8,9 +8,23 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Media\Pictures\color_chroma.png" />
+    <None Remove="Media\Pictures\HueBridge.png" />
+    <None Remove="Media\Pictures\HueColorScale.png" />
+    <None Remove="Media\Pictures\settings.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="ColorHelper" Version="1.8.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Rssdp" Version="4.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Media\Pictures\color_chroma.png" />
+    <Resource Include="Media\Pictures\HueBridge.png" />
+    <Resource Include="Media\Pictures\HueColorScale.png" />
+    <Resource Include="Media\Pictures\settings.png" />
   </ItemGroup>
 
   <ItemGroup>

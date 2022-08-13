@@ -3,10 +3,10 @@
   <Profiles />
   <Settings>
     <Setting Name="BridgeIP" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">192.168.178.47</Value>
     </Setting>
     <Setting Name="Usercode" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">bU14XCakBfOQWw92eqGOg9CeJuTqAcPJMafh0xLd</Value>
     </Setting>
   </Settings>
 </SettingsFile>
