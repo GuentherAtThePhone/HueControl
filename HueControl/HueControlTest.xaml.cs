@@ -29,16 +29,27 @@ namespace HueControl
         readonly double constValue = 100 / 347.5;
 
         bool loop = false;
+        
 
         public HueControlTest()
         {
             InitializeComponent();
 
-            txtUsername.Text = Properties.Settings.Default.Usercode;
-            txtIp.Text = Properties.Settings.Default.BridgeIP;
+            Thread r = new Thread(OnStartUp);
+            r.Start();
+            
+        }
 
-            HueLogic.Usercode = txtUsername.Text;
-            HueLogic.BridgeIP = txtIp.Text;
+        private void OnStartUp()
+        {
+            Dispatcher.Invoke(new System.Action(delegate
+            {
+                txtUsername.Text = Properties.Settings.Default.Usercode;
+                txtIp.Text = Properties.Settings.Default.BridgeIP;
+
+                HueLogic.Usercode = txtUsername.Text;
+                HueLogic.BridgeIP = txtIp.Text;
+            }));            
 
             if (HueLogic.Usercode == "" | HueLogic.Usercode == null | HueLogic.BridgeIP == "" | HueLogic.BridgeIP == null)
             {
@@ -46,29 +57,24 @@ namespace HueControl
 
                 if (HueLogic.BridgeIP == "" | HueLogic.BridgeIP == null)
                 {
-                    GridSettings.Visibility = Visibility.Visible;
-                    GridRoomsOverview.Visibility = Visibility.Collapsed;
-                    GridSingleRoom.Visibility = Visibility.Collapsed;
-                    GridSingleLight.Visibility = Visibility.Collapsed;
-                    GridLightsOverview.Visibility = Visibility.Collapsed;
+                    if (HueLogic.Usercode == "" | HueLogic.Usercode == null)
+                    {
+                        // First Start (no ip and no username)
 
-                    GridCreateUser.Visibility = Visibility.Visible;
-                    TbIpCreateUser.Visibility = Visibility.Collapsed;
 
-                    lblCreateUserState.Content = "Searching for Hue Bridge";
-                    TbIpCreateUser.Visibility = Visibility.Collapsed;
-                    TbIpCreateUser.Text = "";
-                    BtnCreateUserContinue.IsEnabled = true;
-                    BtnCreateUserContinue.Visibility = Visibility.Collapsed;
+                    }
+                    else
+                    {
+                        // No ip but username
+                        GridSettings.Visibility = Visibility.Visible;
+                        GridMainView.Visibility = Visibility.Collapsed;
+                    }
 
-                    Thread thread = new Thread(CreatingUser);
-                    thread.Start();
                 }
                 else
                 {
+                    // IP but no username
                     string result2 = "";
-
-                    Cursor = Cursors.Wait;
 
                     try
                     {
@@ -76,7 +82,9 @@ namespace HueControl
                     }
                     catch (Exception)
                     {
-                        lblCheckConnectionResult.Content = "IP not correct";
+                        // Ip not correct
+
+                        // Act like first start or like create new user
                     }
 
                     if (result2 != "" && !result2.Contains("error"))
@@ -88,16 +96,15 @@ namespace HueControl
                         //username incorrect
                     }
 
-                    Cursor = Cursors.Arrow;
                 }
             }
             else
             {
+                // IP and username
                 Thread t = new Thread(StartApplication);
                 t.Start();
             }
         }
-
 
         #region Selection Changed
 
@@ -801,15 +808,7 @@ namespace HueControl
         }
 
         #endregion
-
-        public T GetAncestorOfType<T>(FrameworkElement child) where T : FrameworkElement
-        {
-            var parent = VisualTreeHelper.GetParent(child);
-            if (parent != null && !(parent is T))
-                return (T)GetAncestorOfType<T>((FrameworkElement)parent);
-            return (T)parent;
-        }
-
+        
         #region Settings
         private void ImgSettings_MouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -818,33 +817,63 @@ namespace HueControl
         }
 
 
-        private void BtnSearchBridge_Click(object sender, RoutedEventArgs e)
+        private int TryIp(string IP)
         {
-            Thread thread = new Thread(SearchBridge);
-            thread.Start();
+            string result = "";
+
+            try
+            {
+                result = HueLogic.GetRequestToBridge(string.Format(HueLogic.LightsUrlTemplate, IP, "TestUserCode", "lights"));
+                return 0;
+            }
+            catch (Exception)
+            {
+                // Wrong IP
+                return 1;
+            }
         }
 
-        private void SearchBridge()
+        private int TryUsername(string IP, string Username)
         {
-            Dispatcher.BeginInvoke(new System.Action(delegate
+            string result = "";
+
+            try
             {
-                Cursor = Cursors.Wait;
-            }));
+                result = HueLogic.GetRequestToBridge(string.Format(HueLogic.LightsUrlTemplate, IP, Username, "lights"));
+            }
+            catch (Exception)
+            {
+                // Ip not correct
+                return 0;
+            }
+
+            if (result != "" && result != null && !result.Contains("error"))
+            {
+                // Success
+                return 1;
+            }
+            else
+            {
+                // Username not correct
+                return 2;
+            }
+        }
+
+        private string SearchBridge()
+        {
+            HueLogic.BridgeIP = "";
 
             var hueLogic = new HueLogic();
             hueLogic.FindBridgeIP();
 
-            Dispatcher.BeginInvoke(new System.Action(delegate
-            {
-                txtIp.Text = HueLogic.BridgeIP;
-                TbIpCreateUser.Text = HueLogic.BridgeIP;
-            }));
-
-            Dispatcher.BeginInvoke(new System.Action(delegate
-            {
-                Cursor = Cursors.Arrow;
-            }));
+            return HueLogic.BridgeIP;
         }
+
+        private void BtnSearchBridge_Click(object sender, RoutedEventArgs e)
+        {
+            txtIp.Text = SearchBridge();
+        }
+        
 
         private void BtnCreateUser_Click(object sender, RoutedEventArgs e)
         {
@@ -866,59 +895,34 @@ namespace HueControl
         private void CreatingUser()
         {
             // Search IP
-
-            SearchBridge();
-
-            Dispatcher.BeginInvoke(new System.Action(delegate
+            if(txtIp.Text != null && txtIp.Text != "")
             {
-                if (!TbIpCreateUser.Text.Equals("no bridge found"))
+                int i = TryIp(txtIp.Text);
+
+                if(i == 0)
                 {
-                    TbIpCreateUser.Visibility = Visibility.Visible;
+
                 }
                 else
                 {
-                    lblCreateUserState.Content = "Couldn´t find a Bridge. Please enter IP manually";
-                    TbIpCreateUser.Visibility = Visibility.Visible;
-                    TbIpCreateUser.Text = "";
-                    BtnCreateUserContinue.IsEnabled = true;
-                    BtnCreateUserContinue.Visibility = Visibility.Visible;
+                    string IP = SearchBridge();
+                    if (IP.Contains("no bridge found"))
+                    {
+                        // No IP - manual enter
+                        return;
+                    }
+                }
+            }
+            else
+            {
+                string IP = SearchBridge();
+                if (IP.Contains("no bridge found"))
+                {
+                    // No IP - manual enter
                     return;
                 }
-            }));
-
-            // Check IP
-
-            string result2 = "";
-
-            Dispatcher.BeginInvoke(new System.Action(delegate
-            {
-                Cursor = Cursors.Wait;
-            }));
-            try
-            {
-                Dispatcher.BeginInvoke(new System.Action(delegate
-                {
-                    result2 = HueLogic.GetRequestToBridge(string.Format(HueLogic.LightsUrlTemplate, TbIpCreateUser.Text, "TestUserCode", "lights"));
-                }));
-            }
-            catch (Exception)
-            {
-                Dispatcher.BeginInvoke(new System.Action(delegate
-                {
-                    lblCreateUserState.Content = "The IP seems to  be wrong. Please check it.";
-                    TbIpCreateUser.Visibility = Visibility.Visible;
-                    TbIpCreateUser.Text = "";
-                    BtnCreateUserContinue.IsEnabled = true;
-                    BtnCreateUserContinue.Visibility = Visibility.Visible;
-                    Cursor = Cursors.Arrow;
-                }));
-                return;
             }
 
-            Dispatcher.BeginInvoke(new System.Action(delegate
-            {
-                Cursor = Cursors.Arrow;
-            }));
 
             // Trying to create user here in loop
 
@@ -942,12 +946,7 @@ namespace HueControl
                     catch (Exception) { }
                     if (!result.Contains("link button not pressed"))
                     {
-                        Dispatcher.BeginInvoke(new System.Action(delegate
-                        {
-                            Clipboard.SetText(result);
-                            MessageBox.Show(result);
-                            loop = false;
-                        }));
+                        loop = false;
                     }
                 }
                 catch (Exception) { }
@@ -955,20 +954,7 @@ namespace HueControl
 
             Dispatcher.BeginInvoke(new System.Action(delegate
             {
-                txtUsername.Text = HueLogic.Usercode;
-                txtIp.Text = TbIpCreateUser.Text;
-                Properties.Settings.Default.BridgeIP = TbIpCreateUser.Text;
-                Properties.Settings.Default.Usercode = HueLogic.Usercode;
-                Properties.Settings.Default.Save();
-
-                GridCreateUser.Visibility = Visibility.Collapsed;
-                TbIpCreateUser.Visibility = Visibility.Collapsed;
-
-                lblCreateUserState.Content = "Searching for Hue Bridge";
-                TbIpCreateUser.Visibility = Visibility.Collapsed;
-
-                BtnCreateUserContinue.IsEnabled = true;
-                BtnCreateUserContinue.Visibility = Visibility.Collapsed;
+                // Actions after soccesfull creation -- Only do it when user is created
             }));
         }
 
@@ -1113,13 +1099,16 @@ namespace HueControl
 
         private void BtnSettingsClose_Click(object sender, RoutedEventArgs e)
         {
-
+            GridSettings.Visibility = Visibility.Collapsed;
+            GridMainView.Visibility = Visibility.Visible;
         }
 
         private void BtnSettingsApply_Click(object sender, RoutedEventArgs e)
         {
             Properties.Settings.Default.BridgeIP = txtIp.Text;
             Properties.Settings.Default.Usercode = txtUsername.Text;
+            HueLogic.BridgeIP = txtIp.Text;
+            HueLogic.Usercode = txtUsername.Text;
             Properties.Settings.Default.Save();
         }
 
@@ -1176,6 +1165,15 @@ namespace HueControl
                 }
 
             }));
+        }
+
+
+        public T GetAncestorOfType<T>(FrameworkElement child) where T : FrameworkElement
+        {
+            var parent = VisualTreeHelper.GetParent(child);
+            if (parent != null && !(parent is T))
+                return (T)GetAncestorOfType<T>((FrameworkElement)parent);
+            return (T)parent;
         }
 
     }
