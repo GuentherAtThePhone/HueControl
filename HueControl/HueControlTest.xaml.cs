@@ -25,7 +25,7 @@ namespace HueControl
     public partial class HueControlTest : Window
     {
 
-        List<LightHelper> lights;
+        List<LightHelper>? lights;
         readonly double constValue = 100 / 347.5;
 
         bool loop = false;
@@ -61,13 +61,16 @@ namespace HueControl
                     {
                         // First Start (no ip and no username)
 
-
+                        FirstStart();
                     }
                     else
                     {
                         // No ip but username
-                        GridSettings.Visibility = Visibility.Visible;
-                        GridMainView.Visibility = Visibility.Collapsed;
+                        Dispatcher.Invoke(new System.Action(delegate
+                        {                            
+                            GridSettings.Visibility = Visibility.Visible;
+                            GridMainView.Visibility = Visibility.Collapsed;
+                        }));
                     }
 
                 }
@@ -84,16 +87,20 @@ namespace HueControl
                     {
                         // Ip not correct
 
-                        // Act like first start or like create new user
+                        // Act like first start
+                        FirstStart();
                     }
 
                     if (result2 != "" && !result2.Contains("error"))
                     {
-                        lblCheckConnectionResult.Content = "Connection successfull";
+                        // IP and Username Correct
+                        LoadData();
                     }
                     else
                     {
                         //username incorrect
+
+
                     }
 
                 }
@@ -101,9 +108,18 @@ namespace HueControl
             else
             {
                 // IP and username
-                Thread t = new Thread(StartApplication);
-                t.Start();
+                LoadData();
             }
+        }
+
+        private void FirstStart() 
+        { 
+
+        }
+
+        private void LoadData()
+        {
+
         }
 
         #region Selection Changed
