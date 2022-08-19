@@ -99,8 +99,11 @@ namespace HueControl
                     else
                     {
                         //username incorrect
-
-
+                        Dispatcher.Invoke(new System.Action(delegate
+                        {                            
+                            GridSettings.Visibility = Visibility.Visible;
+                            GridMainView.Visibility = Visibility.Collapsed;
+                        }));
                     }
 
                 }
