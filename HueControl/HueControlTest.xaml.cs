@@ -29,7 +29,7 @@ namespace HueControl
         readonly double constValue = 100 / 347.5;
 
         bool loop = false;
-        
+        bool firstStart = false;
 
         public HueControlTest()
         {
@@ -94,6 +94,7 @@ namespace HueControl
                     if (result2 != "" && !result2.Contains("error"))
                     {
                         // IP and Username Correct
+                        // Change view (visible grids)
                         LoadData();
                     }
                     else
@@ -111,6 +112,7 @@ namespace HueControl
             else
             {
                 // IP and username
+                // Change view (visible grids)
                 LoadData();
             }
         }
@@ -122,7 +124,23 @@ namespace HueControl
 
         private void LoadData()
         {
+            string result = HueLogic.GetRequestToBridge(string.Format(HueLogic.LightsUrlTemplate, HueLogic.BridgeIP, HueLogic.Usercode, "groups"));
+            List<GroupHelper> groups = GroupHelper.FromJson(result);
 
+            Dispatcher.Invoke(new System.Action(delegate
+            {
+                LvRoomsList.ItemsSource = groups;
+                ListViewRoomsOverview.ItemsSource = groups;
+            }));            
+
+            string result2 = HueLogic.GetRequestToBridge(string.Format(HueLogic.LightsUrlTemplate, HueLogic.BridgeIP, HueLogic.Usercode, "lights"));
+            lights = LightHelper.FromJson(result2);
+
+            Dispatcher.Invoke(new System.Action(delegate
+            {
+                LvLightsList.ItemsSource = lights;
+                LvLightsOverviewList.ItemsSource = lights;
+            }));            
         }
 
         #region Selection Changed
@@ -1140,7 +1158,7 @@ namespace HueControl
 
         private void StartApplication()
         {
-            Dispatcher.BeginInvoke(new System.Action(delegate {
+            Dispatcher.Invoke(new System.Action(delegate {
 
                 // Connection Check
                 string result2 = "";
