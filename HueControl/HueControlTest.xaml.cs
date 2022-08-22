@@ -130,6 +130,8 @@ namespace HueControl
         private void FirstStart() 
         { 
             // Act like creating new Account
+            BtnCreateUserCancel.Visibility = Visibility.Collapsed;
+            CreatingUser();
         }
 
         private void LoadData()
@@ -934,47 +936,160 @@ namespace HueControl
             TbIpCreateUser.Visibility = Visibility.Collapsed;
 
             lblCreateUserState.Content = "Searching for Hue Bridge";
-            TbIpCreateUser.Visibility = Visibility.Collapsed;
             TbIpCreateUser.Text = "";
             BtnCreateUserContinue.IsEnabled = true;
             BtnCreateUserContinue.Visibility = Visibility.Collapsed;
 
             Thread thread = new Thread(CreatingUser);
             thread.Start();
-
         }
 
         private void CreatingUser()
         {
             bool CreationSuccessfull = false;
+            loop = false;
+            string IP = "";
 
             // Search IP
-            if(txtIp.Text != null && txtIp.Text != "" && !firstStart)
+            // Dispatcher, so that if-clause can access txtIP.Text
+            Dispatcher.Invoke(new System.Action(delegate
+            {
+                lblCreateUserState.Content = "Searching for your Hue Bridge..."
+                if(txtIp.Text != null && txtIp.Text != "" && !firstStart)
             {
                 int i = TryIp(txtIp.Text);
 
                 if(i == 0)
                 {
-
+                    // IP correct
+                    HueLogic.BridgeIP = txtIp.Text;
+                    IP = HueLogic.BridgeIP;
+                    // No action neccessary- wait for if-else to end
                 }
                 else
                 {
-                    string IP = SearchBridge();
+                    IP = SearchBridge();
                     if (IP.Contains("no bridge found"))
                     {
-                        // No IP - manual enter
+                        // No IP - enter manual
+                        lblCreateUserState.Content = "Please enter the IP of your Bridge:";
+                        BtnCreateUserContinue.Visibility = Visibility.Visible;
+                        TbIpCreateUser.Visibility = Visibility.Visible;
                         return;
                     }
+                    HueLogic.BridgeIP = IP;
                 }
             }
             else
             {
-                string IP = SearchBridge();
+                IP = SearchBridge();
                 if (IP.Contains("no bridge found"))
                 {
-                    // No IP - manual enter
+                    // No IP - enter manual
+                    lblCreateUserState.Content = "Please enter the IP of your Bridge:";
+                    BtnCreateUserContinue.Visibility = Visibility.Visible;
+                    TbIpCreateUser.Visibility = Visibility.Visible;
                     return;
                 }
+                HueLogic.BridgeIP = IP;
+            }
+            }));
+            
+
+            // Trying to create user here in loop
+
+            loop = true;
+
+            Dispatcher.Invoke(new System.Action(delegate
+            {
+                lblCreateUserState.Content = "Please press the Button on your Bridge";
+            }));
+            while (loop)
+            {
+                try
+                {
+                    // Create random int for the username
+                    Random rand = new Random();
+                    int i = rand.Next(100);
+                    string result = "";
+                    try
+                    {
+                        result = HueLogic.ConnectBridge("HueControlID" + i.ToString());
+                    }
+                    catch (Exception) { }
+                    if (!result.Contains("link button not pressed"))
+                    {
+                        loop = false;
+                        CreationSuccessfull = true;
+                    }
+                }
+                catch (Exception) { }
+            }
+
+            if (CreationSuccessfull)
+            {
+                // Actions after successfull creation
+                Dispatcher.Invoke(new System.Action(delegate
+                {
+                    txtIp.Text = IP;
+                    HueLogic.BridgeIP = IP;
+                    txtUsername.Text = HueLogic.Usercode;
+                }));
+                Properties.Settings.Default.BridgeIP = IP;
+                Properties.Settings.Default.Usercode = HueLogic.Usercode;
+                Properties.Settings.Default.Save();
+            }
+            else
+            {
+                // Creation canceled
+                CreationSuccessfull = false;
+                loop = false;
+                Dispatcher.Invoke(new System.Action(delegate
+                {
+                    GridCreateUser.Visibility = Visibility.Collapsed;
+                })); 
+            }
+        }
+
+        private void BtnCreateUserContinue_Click(object sender, RoutedEventArgs e)
+        {
+            Thread t = new Thread(CreateUserContinue);
+            t.Start();
+            BtnCreateUserContinue.IsEnabled = false;
+        }
+
+        private void CreateUserContinue()
+        {
+            bool CreationSuccessfull = false;
+            loop = false;
+            string IP = "";
+
+            // The creating progress started with an IP-Check
+
+            //IP Check
+
+            Dispatcher.Invoke(new System.Action(delegate
+            {
+                int i = TryIp(TbIpCreateUser.Text);
+                lblCreateUserState.Content = "Checking the IP adress";
+            }));
+
+            if (if == 0)
+            {
+                // Right IP
+                Dispatcher.Invoke(new System.Action(delegate
+                {
+                    IP = TbIpCreateUser.Text;
+                }));
+            }else
+            {
+                // Wrong IP
+                Dispatcher.Invoke(new System.Action(delegate
+                {
+                    BtnCreateUserContinue.IsEnabled = true;
+                    lblCreateUserState.Content = "Please enter the IP of your Bridge:";
+                }));                
+                return;
             }
 
 
@@ -1011,104 +1126,27 @@ namespace HueControl
             if (CreationSuccessfull)
             {
                 // Actions after successfull creation
+                Dispatcher.Invoke(new System.Action(delegate
+                {
+                    txtIp.Text = IP;
+                    HueLogic.BridgeIP = IP;
+                    txtUsername.Text = HueLogic.Usercode;
+                    BtnCreateUserContinue.IsEnabled = true;
+                }));
+                Properties.Settings.Default.BridgeIP = IP;
+                Properties.Settings.Default.Usercode = HueLogic.Usercode;
+                Properties.Settings.Default.Save();
             }
             else
             {
                 // Creation canceled
-            }
-        }
-
-        private void BtnCreateUserContinue_Click(object sender, RoutedEventArgs e)
-        {
-            Thread t = new Thread(CreateUserContinue);
-            t.Start();
-            BtnCreateUserContinue.IsEnabled = false;
-        }
-
-        private void CreateUserContinue()
-        {
-            // Check IP
-
-            string result2 = "";
-
-            Dispatcher.Invoke(new System.Action(delegate
-            {
-                Cursor = Cursors.Wait;
-            }));
-
-            try
-            {
+                CreationSuccessfull = false;
+                loop = false;
                 Dispatcher.Invoke(new System.Action(delegate
                 {
-                    result2 = HueLogic.GetRequestToBridge(string.Format(HueLogic.LightsUrlTemplate, TbIpCreateUser.Text, "TestUserCode", "lights"));
-                }));
-            }
-            catch (Exception)
-            {
-                Dispatcher.Invoke(new System.Action(delegate
-                {
-                    lblCreateUserState.Content = "The IP seems to  be wrong. Please check it.";
-                    TbIpCreateUser.Visibility = Visibility.Visible;
-                    BtnCreateUserContinue.Visibility = Visibility.Visible;
-                    BtnCreateUserContinue.IsEnabled = true;
-                    Cursor = Cursors.Arrow;
-                }));
-                return;
-            }
-
-            Dispatcher.Invoke(new System.Action(delegate
-            {
-                Cursor = Cursors.Arrow;
-            }));
-
-            // Trying to create user here in loop
-
-            loop = true;
-            Dispatcher.Invoke(new System.Action(delegate
-            {
-                lblCreateUserState.Content = "Please press the Button on your Bridge";
-            }));
-            while (loop)
-            {
-                try
-                {
-                    Random rand = new Random();
-                    int i = rand.Next(100);
-                    string result = "";
-                    try
-                    {
-                        result = HueLogic.ConnectBridge("HueControlID" + i.ToString());
-                    }
-                    catch (Exception) { }
-                    if (!result.Contains("link button not pressed"))
-                    {
-                        Dispatcher.Invoke(new System.Action(delegate
-                        {
-                            Clipboard.SetText(result);
-                            MessageBox.Show(result);
-                            loop = false;
-                        }));
-                    }
-                }
-                catch (Exception) { }
-
-                Dispatcher.Invoke(new System.Action(delegate
-                {
-                    txtUsername.Text = HueLogic.Usercode;
-                    txtIp.Text = TbIpCreateUser.Text;
-                    Properties.Settings.Default.BridgeIP = TbIpCreateUser.Text;
-                    Properties.Settings.Default.Usercode = HueLogic.Usercode;
-                    Properties.Settings.Default.Save();
-
                     GridCreateUser.Visibility = Visibility.Collapsed;
-                    TbIpCreateUser.Visibility = Visibility.Collapsed;
-
-                    lblCreateUserState.Content = "Searching for Hue Bridge";
-                    TbIpCreateUser.Visibility = Visibility.Collapsed;
-                    TbIpCreateUser.Text = "";
                     BtnCreateUserContinue.IsEnabled = true;
-                    BtnCreateUserContinue.Visibility = Visibility.Collapsed;
-                }));
+                })); 
             }
         }
 
