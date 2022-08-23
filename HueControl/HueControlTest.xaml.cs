@@ -120,10 +120,10 @@ namespace HueControl
                 // Change view (visible grids)
                 LoadData();
                 Dispatcher.Invoke(new System.Action(delegate
-                    {                            
-                        GridSettings.Visibility = Visibility.Collapsed;
-                        GridMainView.Visibility = Visibility.Visible;
-                    }));
+                {                            
+                    GridSettings.Visibility = Visibility.Collapsed;
+                    GridMainView.Visibility = Visibility.Visible;
+                }));
             }
         }
 
@@ -954,17 +954,31 @@ namespace HueControl
             // Dispatcher, so that if-clause can access txtIP.Text
             Dispatcher.Invoke(new System.Action(delegate
             {
-                lblCreateUserState.Content = "Searching for your Hue Bridge..."
+                lblCreateUserState.Content = "Searching for your Hue Bridge...";
                 if(txtIp.Text != null && txtIp.Text != "" && !firstStart)
-            {
-                int i = TryIp(txtIp.Text);
-
-                if(i == 0)
                 {
-                    // IP correct
-                    HueLogic.BridgeIP = txtIp.Text;
-                    IP = HueLogic.BridgeIP;
-                    // No action neccessary- wait for if-else to end
+                    int i = TryIp(txtIp.Text);
+
+                    if(i == 0)
+                    {
+                        // IP correct
+                        HueLogic.BridgeIP = txtIp.Text;
+                        IP = HueLogic.BridgeIP;
+                        // No action neccessary- wait for if-else to end
+                    }
+                    else
+                    {
+                        IP = SearchBridge();
+                        if (IP.Contains("no bridge found"))
+                        {
+                            // No IP - enter manual
+                            lblCreateUserState.Content = "Please enter the IP of your Bridge:";
+                            BtnCreateUserContinue.Visibility = Visibility.Visible;
+                            TbIpCreateUser.Visibility = Visibility.Visible;
+                            return;
+                        }
+                        HueLogic.BridgeIP = IP;
+                    }
                 }
                 else
                 {
@@ -979,20 +993,6 @@ namespace HueControl
                     }
                     HueLogic.BridgeIP = IP;
                 }
-            }
-            else
-            {
-                IP = SearchBridge();
-                if (IP.Contains("no bridge found"))
-                {
-                    // No IP - enter manual
-                    lblCreateUserState.Content = "Please enter the IP of your Bridge:";
-                    BtnCreateUserContinue.Visibility = Visibility.Visible;
-                    TbIpCreateUser.Visibility = Visibility.Visible;
-                    return;
-                }
-                HueLogic.BridgeIP = IP;
-            }
             }));
             
 
@@ -1034,6 +1034,7 @@ namespace HueControl
                     txtIp.Text = IP;
                     HueLogic.BridgeIP = IP;
                     txtUsername.Text = HueLogic.Usercode;
+                    BtnCreateUserCancel.Visibility = Visibility.Visible;
                 }));
                 Properties.Settings.Default.BridgeIP = IP;
                 Properties.Settings.Default.Usercode = HueLogic.Usercode;
@@ -1067,14 +1068,14 @@ namespace HueControl
             // The creating progress started with an IP-Check
 
             //IP Check
-
+            int i = 0;
             Dispatcher.Invoke(new System.Action(delegate
             {
-                int i = TryIp(TbIpCreateUser.Text);
+                i = TryIp(TbIpCreateUser.Text);
                 lblCreateUserState.Content = "Checking the IP adress";
             }));
 
-            if (if == 0)
+            if (i == 0)
             {
                 // Right IP
                 Dispatcher.Invoke(new System.Action(delegate
@@ -1107,11 +1108,11 @@ namespace HueControl
                 {
                     // Create random int for the username
                     Random rand = new Random();
-                    int i = rand.Next(100);
+                    int j = rand.Next(100);
                     string result = "";
                     try
                     {
-                        result = HueLogic.ConnectBridge("HueControlID" + i.ToString());
+                        result = HueLogic.ConnectBridge("HueControlID" + j.ToString());
                     }
                     catch (Exception) { }
                     if (!result.Contains("link button not pressed"))
@@ -1132,6 +1133,7 @@ namespace HueControl
                     HueLogic.BridgeIP = IP;
                     txtUsername.Text = HueLogic.Usercode;
                     BtnCreateUserContinue.IsEnabled = true;
+                    BtnCreateUserCancel.Visibility = Visibility.Visible;
                 }));
                 Properties.Settings.Default.BridgeIP = IP;
                 Properties.Settings.Default.Usercode = HueLogic.Usercode;
@@ -1145,7 +1147,7 @@ namespace HueControl
                 Dispatcher.Invoke(new System.Action(delegate
                 {
                     GridCreateUser.Visibility = Visibility.Collapsed;
-                    BtnCreateUserContinue.IsEnabled = true;
+                    BtnCreateUserContinue.IsEnabled = true;                    
                 })); 
             }
         }
@@ -1153,7 +1155,7 @@ namespace HueControl
         private void BtnCreateUserCancel_Click(object sender, RoutedEventArgs e)
         {
             loop = false;
-
+            
             GridCreateUser.Visibility = Visibility.Collapsed;
             TbIpCreateUser.Visibility = Visibility.Collapsed;
 
@@ -1162,6 +1164,8 @@ namespace HueControl
 
             BtnCreateUserContinue.IsEnabled = true;
             BtnCreateUserContinue.Visibility = Visibility.Collapsed;
+            GridSettings.Visibility = Visibility.Visible;
+            GridMainView.Visibility = Visibility.Collapsed;
         }
 
         private void BtnCheckConnection_Click(object sender, RoutedEventArgs e)
@@ -1212,7 +1216,13 @@ namespace HueControl
 
         private void BtnSettingsApllyClose_Click(object sender, RoutedEventArgs e)
         {
-
+            Properties.Settings.Default.BridgeIP = txtIp.Text;
+            Properties.Settings.Default.Usercode = txtUsername.Text;
+            HueLogic.BridgeIP = txtIp.Text;
+            HueLogic.Usercode = txtUsername.Text;
+            Properties.Settings.Default.Save();
+            GridSettings.Visibility = Visibility.Collapsed;
+            GridMainView.Visibility = Visibility.Visible;
         }
 
         #endregion
