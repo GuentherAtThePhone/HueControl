@@ -30,9 +30,13 @@ namespace HueControl
 
         bool loop = false;
         bool firstStart = false;
+        bool starting = false;
+
         public HueControlTest()
         {
             InitializeComponent();
+
+            starting = true;
 
             Thread r = new Thread(OnStartUp);
             r.Start();
@@ -40,7 +44,7 @@ namespace HueControl
         }
 
         private void OnStartUp()
-        {
+        {           
             Dispatcher.Invoke(new System.Action(delegate
             {
                 txtUsername.Text = Properties.Settings.Default.Usercode;
@@ -61,6 +65,7 @@ namespace HueControl
                         // First Start (no ip and no username)
                         firstStart = true;
                         FirstStart();
+                        starting = false;
                     }
                     else
                     {
@@ -88,6 +93,7 @@ namespace HueControl
                         firstStart = true;
                         // Act like first start
                         FirstStart();
+                        starting = false;
                     }
 
                     if (result2 != "" && !result2.Contains("error"))
@@ -100,6 +106,7 @@ namespace HueControl
                             GridSettings.Visibility = Visibility.Collapsed;
                             GridMainView.Visibility = Visibility.Visible;
                         }));
+                        starting = false;
                     }
                     else
                     {
@@ -268,6 +275,10 @@ namespace HueControl
         // Change in lights List on left side
         private void LvLightsList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (starting)
+            {
+                return;
+            }
             // Errr
             GridSettings.Visibility = Visibility.Collapsed;
             GridRoomsOverview.Visibility = Visibility.Collapsed;
