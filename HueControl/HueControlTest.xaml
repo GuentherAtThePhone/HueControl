@@ -304,25 +304,42 @@
                               BorderThickness="0"
                               SelectionChanged="ListViewRoomsOverview_SelectionChanged"
                               MouseDoubleClick="ListViewRoomsOverview_MouseDoubleClick">
-                            <ListView.ItemTemplate>
-                                <DataTemplate>
-                                    <Border Height="100"
-                                        Width="160"
-                                        CornerRadius="4"
-                                        BorderThickness="1"
-                                        BorderBrush="Black"
-                                        Margin="10">
-                                        <Grid Height="90" Margin="4">
-                                            <Label Content="{Binding Name}" VerticalAlignment="Top"/>
-                                            <DockPanel LastChildFill="True" VerticalAlignment="Bottom">
-                                                <Slider x:Name="SlBrightnessRoomOverview" Value="{Binding Action.Bri}" Interval="1" IsSnapToTickEnabled="True" Maximum="254" Minimum="0" Width="100" ValueChanged="SlBrightnessRoomOverview_ValueChanged"/>
-                                                <CheckBox x:Name="CbIsOnRoomOverView" DockPanel.Dock="Right" HorizontalAlignment="Right" IsChecked="{Binding State.Any_On}" Click="CbIsOnRoomOverView_Click"/>
-                                            </DockPanel>
-                                        </Grid>
-                                    </Border>
+                            <ListView.ItemContainerStyle>
+                                
+                                <Style TargetType="ListViewItem">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter Property="Background" Value="#292b2f"/>
+                                        </Trigger>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Cursor" Value="Hand"/>
+                                        </Trigger>
+                                    </Style.Triggers>
 
-                                </DataTemplate>
-                            </ListView.ItemTemplate>
+                                    <Setter Property="Background" Value="#393b40"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ListViewItem">
+                                                <Border Height="100"
+                                                        Width="160"
+                                                        CornerRadius="4"
+                                                        BorderThickness="1"
+                                                        BorderBrush="Black"
+                                                        Margin="10">
+                                                    <Grid Height="90" Margin="4">
+                                                        <Label Content="{Binding Name}" VerticalAlignment="Top"/>
+                                                        <DockPanel LastChildFill="True" VerticalAlignment="Bottom">
+                                                            <Slider x:Name="SlBrightnessRoomOverview" Value="{Binding Action.Bri}" Interval="1" IsSnapToTickEnabled="True" Maximum="254" Minimum="0" Width="100" ValueChanged="SlBrightnessRoomOverview_ValueChanged"/>
+                                                            <CheckBox x:Name="CbIsOnRoomOverView" DockPanel.Dock="Right" HorizontalAlignment="Right" IsChecked="{Binding State.Any_On}" Click="CbIsOnRoomOverView_Click"/>
+                                                        </DockPanel>
+                                                    </Grid>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+
+                                </Style>
+                            </ListView.ItemContainerStyle>
                             <ListView.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <WrapPanel Margin="0"/>

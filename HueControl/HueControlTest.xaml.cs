@@ -30,7 +30,6 @@ namespace HueControl
 
         bool loop = false;
         bool firstStart = false;
-
         public HueControlTest()
         {
             InitializeComponent();
@@ -203,6 +202,7 @@ namespace HueControl
             {
                 return;
             }
+
             GridRoomsOverview.Visibility = Visibility.Collapsed;
             GridSingleRoom.Visibility = Visibility.Visible;
             GridSingleLight.Visibility = Visibility.Collapsed;
@@ -268,6 +268,7 @@ namespace HueControl
         // Change in lights List on left side
         private void LvLightsList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            // Errr
             GridSettings.Visibility = Visibility.Collapsed;
             GridRoomsOverview.Visibility = Visibility.Collapsed;
             GridSingleRoom.Visibility = Visibility.Collapsed;
