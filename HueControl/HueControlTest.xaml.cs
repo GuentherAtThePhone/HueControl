@@ -279,7 +279,6 @@ namespace HueControl
             {
                 return;
             }
-            // Errr
             GridSettings.Visibility = Visibility.Collapsed;
             GridRoomsOverview.Visibility = Visibility.Collapsed;
             GridSingleRoom.Visibility = Visibility.Collapsed;

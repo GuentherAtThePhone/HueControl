@@ -309,14 +309,15 @@
                                 <Style TargetType="ListViewItem">
                                     <Style.Triggers>
                                         <Trigger Property="IsSelected" Value="True">
-                                            <Setter Property="Background" Value="#292b2f"/>
+                                            <Setter Property="Background" Value="#FFBBBBBB"/>
                                         </Trigger>
                                         <Trigger Property="IsMouseOver" Value="True">
                                             <Setter Property="Cursor" Value="Hand"/>
+                                            <Setter Property="Background" Value="#FFDDDDDD"/>
                                         </Trigger>
                                     </Style.Triggers>
 
-                                    <Setter Property="Background" Value="#393b40"/>
+                                    <Setter Property="Background" Value="#FFEEEEEE"/>
                                     <Setter Property="Template">
                                         <Setter.Value>
                                             <ControlTemplate TargetType="ListViewItem">
@@ -325,7 +326,8 @@
                                                         CornerRadius="4"
                                                         BorderThickness="1"
                                                         BorderBrush="Black"
-                                                        Margin="10">
+                                                        Margin="10"
+                                                        Background="{TemplateBinding Background}">
                                                     <Grid Height="90" Margin="4">
                                                         <Label Content="{Binding Name}" VerticalAlignment="Top"/>
                                                         <DockPanel LastChildFill="True" VerticalAlignment="Bottom">
