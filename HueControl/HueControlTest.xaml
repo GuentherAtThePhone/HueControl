@@ -452,7 +452,7 @@
                                 <StackPanel>
                                     <Slider x:Name="SlColorHue" Margin="1" Maximum="65535" Visibility="Collapsed" ValueChanged="SlColorHue_ValueChanged" Interval="1" IsSnapToTickEnabled="True">
                                         <Slider.Background>
-                                            <ImageBrush ImageSource="C:\Users\Coolj\source\repos\HueTest\HueTest\Pictures\HueColorScale.png"/>
+                                            <ImageBrush ImageSource="Media/Pictures/HueColorScale.png"/>
                                         </Slider.Background>
                                     </Slider>
                                 </StackPanel>
@@ -460,7 +460,7 @@
                                 <Slider x:Name="SlColorCT" Margin="1" Visibility="Collapsed" ValueChanged="SlColorCT_ValueChanged"/>
 
                                 <Grid x:Name="GridXYColorSelector" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Bottom" Visibility="Collapsed">
-                                    <Image Source="C:\Users\Coolj\source\repos\HueTest\HueTest\Pictures\color_chroma.png" Height="300" Width="300" VerticalAlignment="Bottom" HorizontalAlignment="Right" Stretch="Fill" Margin="15"/>
+                                    <Image Source="Media/Pictures/color_chroma.png" Height="300" Width="300" VerticalAlignment="Bottom" HorizontalAlignment="Right" Stretch="Fill" Margin="15"/>
                                     <Canvas x:Name="CanColor" Height="295" Width="276" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="22,15,0,0">
                                         <Rectangle x:Name="Rectangle1" Fill="Black" Height="3" Width="3" 
                                            Canvas.Bottom="{Binding ElementName=SliderY, Path=Value, UpdateSourceTrigger=PropertyChanged}"  
@@ -596,7 +596,7 @@
             <Grid  x:Name="GridCreateUser" Visibility="Collapsed" Background="White">
                 <StackPanel>
                     <Label x:Name="lblCreateUserState" Content="Searching for Hue Bridge" HorizontalAlignment="Center" FontSize="20" FontWeight="SemiBold" Margin="0,50,0,0"/>
-                    <Image Source="C:\Users\Coolj\source\repos\HueTest\HueTest\Pictures\HueBridge.png" Stretch="Fill" MaxHeight="550" MaxWidth="550"/>
+                    <Image Source="Media/Pictures/HueBridge.png" Stretch="Fill" MaxHeight="550" MaxWidth="550"/>
                     <TextBox x:Name="TbIpCreateUser" Text="" HorizontalAlignment="Center" FontSize="18" MinWidth="100"/>
                     <Button x:Name="BtnCreateUserContinue" Content=" Continue " HorizontalAlignment="Center" Margin="10" FontSize="16" FontWeight="Medium" Click="BtnCreateUserContinue_Click"/>
                     <Button x:Name="BtnCreateUserCancel" Content=" Cancel " HorizontalAlignment="Right" FontSize="16" FontWeight="SemiBold" Margin="20" Click="BtnCreateUserCancel_Click"/>

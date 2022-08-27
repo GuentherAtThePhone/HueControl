@@ -31,6 +31,11 @@ namespace HueControl
         bool loop = false;
         bool firstStart = false;
         bool starting = false;
+        bool SettingsOpened = false;
+        /// <summary>
+        /// ToDo:
+        /// - Check data by existing data (l.145)
+        /// </summary>
 
         public HueControlTest()
         {
@@ -65,6 +70,12 @@ namespace HueControl
                         // First Start (no ip and no username)
                         firstStart = true;
                         FirstStart();
+                        LoadData();
+                        Dispatcher.Invoke(new System.Action(delegate
+                        {                            
+                            GridSettings.Visibility = Visibility.Collapsed;
+                            GridMainView.Visibility = Visibility.Visible;
+                        }));
                         starting = false;
                     }
                     else
@@ -93,6 +104,12 @@ namespace HueControl
                         firstStart = true;
                         // Act like first start
                         FirstStart();
+                        LoadData();
+                        Dispatcher.Invoke(new System.Action(delegate
+                        {                            
+                            GridSettings.Visibility = Visibility.Collapsed;
+                            GridMainView.Visibility = Visibility.Visible;
+                        }));
                         starting = false;
                     }
 
@@ -123,13 +140,37 @@ namespace HueControl
             else
             {
                 // IP and username
-                // Change view (visible grids)
-                LoadData();
-                Dispatcher.Invoke(new System.Action(delegate
-                {                            
-                    GridSettings.Visibility = Visibility.Collapsed;
-                    GridMainView.Visibility = Visibility.Visible;
-                }));
+
+                //  Check Data
+                int i = TryUsername(HueLogic.BridgeIP, HueLogic.Usercode);
+
+                switch (i)
+                {
+                    // IP not Correct
+                    case 0:
+                        break;
+
+                    // All correct
+                    case 1:
+                        // Change view (visible grids)
+                        LoadData();
+                        Dispatcher.Invoke(new System.Action(delegate
+                        {
+                            GridSettings.Visibility = Visibility.Collapsed;
+                            GridMainView.Visibility = Visibility.Visible;
+                        }));
+                        starting = false;
+                        break;
+
+                    // Username not Correct
+                    case 2:
+                        break;
+
+                    // don´t know whathapend when this is the case
+                    default:
+                        break;
+                }
+                
             }
         }
 
@@ -936,7 +977,10 @@ namespace HueControl
 
         private void BtnSearchBridge_Click(object sender, RoutedEventArgs e)
         {
-            txtIp.Text = SearchBridge();
+            Dispatcher.Invoke(new System.Action(delegate
+            {
+                txtIp.Text = SearchBridge();
+            }));
         }
         
 
@@ -1214,6 +1258,8 @@ namespace HueControl
         {
             GridSettings.Visibility = Visibility.Collapsed;
             GridMainView.Visibility = Visibility.Visible;
+
+            LoadData();
         }
 
         private void BtnSettingsApply_Click(object sender, RoutedEventArgs e)
@@ -1226,7 +1272,7 @@ namespace HueControl
         }
 
         private void BtnSettingsApllyClose_Click(object sender, RoutedEventArgs e)
-        {
+        {            
             Properties.Settings.Default.BridgeIP = txtIp.Text;
             Properties.Settings.Default.Usercode = txtUsername.Text;
             HueLogic.BridgeIP = txtIp.Text;
@@ -1234,6 +1280,8 @@ namespace HueControl
             Properties.Settings.Default.Save();
             GridSettings.Visibility = Visibility.Collapsed;
             GridMainView.Visibility = Visibility.Visible;
+
+            LoadData();
         }
 
         #endregion
