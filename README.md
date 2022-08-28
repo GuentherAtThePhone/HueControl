@@ -2,6 +2,7 @@
 ## Welcome to HueControl
 
 Current Version: 1.0.0
+
 HueControl is a WPF desktop applicatiion to control your Philips Hue Bridge.
 This doesn´t only work with Hue bulbs but with all supported lights like Ikeas Tradfri.
 Moreover not only lights are supported but SmartPlugs as well, like the one from Osram.
