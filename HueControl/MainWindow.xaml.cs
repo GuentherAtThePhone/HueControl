@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,10 +24,10 @@ namespace HueControl
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    ///https://stackoverflow.com/questions/65818633/how-to-download-a-raw-file-from-github-in-c-sharp-net 
 
     public partial class MainWindow : Window
     {
+        string CurrentVersion = "1.0.0";
 
         List<LightHelper>? lights;
         readonly double constValue = 100 / 347.5;
@@ -45,11 +47,49 @@ namespace HueControl
 
             starting = true;
 
+            // Checks wether a newer version is available
+            bool newerVersionAvailable = CheckForUpdates();
+
+            if (newerVersionAvailable)
+            {
+                // Start Update Progress
+                UpdateClient();
+            }
+
             Thread r = new Thread(OnStartUp);
             r.Start();
 
         }
 
+        private bool CheckForUpdates()
+        {
+            string remoteUri = "https://raw.githubusercontent.com/GuentherAtThePhone/HueControl/master/";
+            string fileName = "README.md", myStringWebResource = null;
+            // Create a new WebClient instance.
+            WebClient myWebClient = new WebClient();
+            // Concatenate the domain with the Web resource filename.
+            myStringWebResource = remoteUri + fileName;
+            // Download the Web resource and save it into the current filesystem folder.
+            myWebClient.DownloadFile(myStringWebResource, fileName);
+
+            string[] file = File.ReadAllLines(fileName);
+            // Current Version: 1.0.0
+            int i = file[3].IndexOf(":") + 1;
+            string version = file[3].Substring(i);
+
+            if(version != CurrentVersion)
+            {
+                // Newer Version is Available
+                return true;
+            }
+            // Newest version is installed
+            return false;
+        }
+
+        private void UpdateClient()
+        {
+
+        }
 
         private void OnStartUp()
         {
