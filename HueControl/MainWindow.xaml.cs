@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -49,7 +51,6 @@ namespace HueControl
 
             // Checks wether a newer version is available
             bool newerVersionAvailable = CheckForUpdates();
-
             if (newerVersionAvailable)
             {
                 // Start Update Progress
@@ -74,10 +75,11 @@ namespace HueControl
 
             string[] file = File.ReadAllLines(fileName);
             // Current Version: 1.0.0
-            int i = file[3].IndexOf(":") + 1;
+            int i = file[3].IndexOf(":") + 2;
             string version = file[3].Substring(i);
+            File.Delete(fileName);
 
-            if(version != CurrentVersion)
+            if(version == CurrentVersion)
             {
                 // Newer Version is Available
                 return true;
@@ -88,7 +90,9 @@ namespace HueControl
 
         private void UpdateClient()
         {
-
+            string pid = Process.GetCurrentProcess().Id.ToString();
+            
+            Process.Start(@"C:\\Users\Coolj\\source\\repos\\HueControl\\Updater\\bin\\Debug\\net6.0\\Updater.exe", pid);
         }
 
         private void OnStartUp()
