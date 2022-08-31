@@ -79,7 +79,7 @@ namespace HueControl
             string version = file[3].Substring(i);
             File.Delete(fileName);
 
-            if(version == CurrentVersion)
+            if(version != CurrentVersion)
             {
                 // Newer Version is Available
                 return true;
