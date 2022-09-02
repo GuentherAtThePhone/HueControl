@@ -5,7 +5,7 @@ using System;
 
 
 string processID;
-
+string version = "";
 processID = args[0].ToString();
 string UpdatePath = @"C:\\Users\\Coolj\\source\\repos\\HueControl\\HueControl\\bin\\Debug\\net6.0-windows";
 
@@ -37,7 +37,7 @@ try
     File.Delete(fileName);
 
     int i = file[3].IndexOf(":") + 2;
-    string version = file[3].Substring(i);
+    version = file[3].Substring(i);
 
     File.AppendAllText(@"UpdateLog.log", DateTime.Now.ToLongDateString() + ": successfully requested the newest version: " + version + "\r\n");
 }
@@ -50,7 +50,7 @@ catch (Exception ex)
 try
 {
     // Download The new File
-    string remoteUriUpate = "https://github.com/GuentherAtThePhone/HueControl/releases/download/v1.0.0/";
+    string remoteUriUpate = "https://github.com/GuentherAtThePhone/HueControl/releases/download/v" + version + "/";
     string fileNameUpate = "HueControl.exe", myStringWebResourceUpdate = null;
     // Create a new WebClient instance.
     WebClient myWebClientUpdate = new WebClient();
