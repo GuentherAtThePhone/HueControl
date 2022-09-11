@@ -29,6 +29,9 @@ namespace HueControl
 
     public partial class MainWindow : Window
     {
+        // This string has to be changed for every new published version
+        // It has to be forrmatted as the followingg: "1.0.0"
+        // It has to match the  "Current version"-version in the README.md file
         string CurrentVersion = "1.0.0";
 
         List<LightHelper>? lights;
@@ -57,6 +60,7 @@ namespace HueControl
                 UpdateClient();
             }
 
+            // Thi part of code is only reached when there is no newer Version/Unable to check for newer Version
             Thread r = new Thread(OnStartUp);
             r.Start();
 
@@ -64,27 +68,37 @@ namespace HueControl
 
         private bool CheckForUpdates()
         {
-            string remoteUri = "https://raw.githubusercontent.com/GuentherAtThePhone/HueControl/master/";
-            string fileName = "README.md", myStringWebResource = null;
-            // Create a new WebClient instance.
-            WebClient myWebClient = new WebClient();
-            // Concatenate the domain with the Web resource filename.
-            myStringWebResource = remoteUri + fileName;
-            // Download the Web resource and save it into the current filesystem folder.
-            myWebClient.DownloadFile(myStringWebResource, fileName);
+            string version = CurrentVersion;
+            try
+            {
+                // Downloading the README.md file
+                string remoteUri = "https://raw.githubusercontent.com/GuentherAtThePhone/HueControl/master/";
+                string fileName = "README.md", myStringWebResource = null;
+                // Create a new WebClient instance.
+                WebClient myWebClient = new WebClient();
+                // Concatenate the domain with the Web resource filename.
+                myStringWebResource = remoteUri + fileName;
+                // Download the Web resource and save it into the current filesystem folder.
+                myWebClient.DownloadFile(myStringWebResource, fileName);
 
-            string[] file = File.ReadAllLines(fileName);
-            // Current Version: 1.0.0
-            int i = file[3].IndexOf(":") + 2;
-            string version = file[3].Substring(i);
-            File.Delete(fileName);
+                // Read all lines from the downloaded README.md file
+                string[] file = File.ReadAllLines(fileName);
+
+                // Getting the version that is in the downloaded README.md file
+                int i = file[3].IndexOf(":") + 2;
+                version = file[3].Substring(i);
+
+                // Deleting the README.md file,  because it is no longer needed
+                File.Delete(fileName);
+            }
+            catch (Exception) { }
 
             if(version != CurrentVersion)
             {
                 // Newer Version is Available
                 return true;
             }
-            // Newest version is installed
+            // Newest version is installed or unable to look for newest version
             return false;
         }
 
@@ -92,7 +106,7 @@ namespace HueControl
         {
             string pid = Process.GetCurrentProcess().Id.ToString();
             
-            Process.Start(@"C:\\Users\Coolj\\source\\repos\\HueControl\\Updater\\bin\\Debug\\net6.0\\Updater.exe", pid);
+            Process.Start("Updater.exe", pid);
         }
 
         private void OnStartUp()
@@ -230,6 +244,7 @@ namespace HueControl
 
         private void LoadData()
         {
+            starting = true;
             // Load the data for the groups
             string result = HueLogic.GetRequestToBridge(string.Format(HueLogic.LightsUrlTemplate, HueLogic.BridgeIP, HueLogic.Usercode, "groups"));
             List<GroupHelper> groups = GroupHelper.FromJson(result);
@@ -251,6 +266,8 @@ namespace HueControl
                 LvLightsList.ItemsSource = lights;
                 LvLightsOverviewList.ItemsSource = lights;
             }));
+
+            starting = false;
         }
 
         #region Selection Changed
