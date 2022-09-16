@@ -35,9 +35,13 @@ namespace HueControl
         string CurrentVersion = "1.0.0";
 
         List<LightHelper>? lights;
+
+        // Value that helps to convert the xy-color values to a graph
         readonly double constValue = 100 / 347.5;
 
+        // loop is used when trying to create a new user
         bool loop = false;
+
         bool firstStart = false;
         bool starting = false;
         bool SettingsOpened = false;
@@ -66,6 +70,8 @@ namespace HueControl
 
         }
 
+
+        #region Starting Stuff
         private bool CheckForUpdates()
         {
             string version = CurrentVersion;
@@ -241,6 +247,8 @@ namespace HueControl
             BtnCreateUserCancel.Visibility = Visibility.Collapsed;
             CreatingUser();
         }
+        #endregion
+
 
         private void LoadData()
         {
@@ -279,6 +287,10 @@ namespace HueControl
             {
                 return;
             }
+            if (starting)
+            {
+                return;
+            }
             GridRoomsOverview.Visibility = Visibility.Collapsed;
             GridSingleRoom.Visibility = Visibility.Visible;
             GridSingleLight.Visibility = Visibility.Collapsed;
@@ -311,6 +323,10 @@ namespace HueControl
         private void ListViewRoomsOverview_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (lights == null)
+            {
+                return;
+            }
+            if (SettingsOpened)
             {
                 return;
             }
@@ -983,6 +999,7 @@ namespace HueControl
         {
             GridSettings.Visibility = Visibility.Visible;
             GridMainView.Visibility = Visibility.Collapsed;
+            SettingsOpened = true;
         }
 
 
@@ -1040,6 +1057,12 @@ namespace HueControl
         }
 
         private void BtnSearchBridge_Click(object sender, RoutedEventArgs e)
+        {
+            Thread t = new Thread(SearchingBrige);
+            t.Start();            
+        }
+
+        private void SearchingBrige()
         {
             Dispatcher.Invoke(new System.Action(delegate
             {
@@ -1325,6 +1348,7 @@ namespace HueControl
             GridMainView.Visibility = Visibility.Visible;
 
             LoadData();
+            SettingsOpened = false;
         }
 
         private void BtnSettingsApply_Click(object sender, RoutedEventArgs e)
@@ -1347,11 +1371,13 @@ namespace HueControl
             GridMainView.Visibility = Visibility.Visible;
 
             LoadData();
+            SettingsOpened = false;
         }
 
         #endregion
 
 
+        // Function to get the mother element of an element
         public T GetAncestorOfType<T>(FrameworkElement child) where T : FrameworkElement
         {
             var parent = VisualTreeHelper.GetParent(child);

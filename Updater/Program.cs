@@ -7,14 +7,12 @@ using System;
 string processID;
 string version = "";
 processID = args[0].ToString();
-string UpdatePath = @"C:\\Users\\Coolj\\source\\repos\\HueControl\\HueControl\\bin\\Debug\\net6.0-windows";
 
 // Create the log file
 File.Create(@"UpdateLog.log").Close();
+
 File.AppendAllText(@"UpdateLog.log", "Logfile created at " + DateTime.Now.ToLongDateString() + "\r\n");
 
-Console.WriteLine(processID);
-Console.WriteLine(UpdatePath);
 File.AppendAllText(@"UpdateLog.log", DateTime.Now.ToLongDateString() + ": given processID: " + processID + "\r\n");
 
 Process.GetProcessById(Convert.ToInt32(processID)).Kill();

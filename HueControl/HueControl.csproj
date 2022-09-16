@@ -10,6 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Media\Pictures\arrow.png" />
     <None Remove="Media\Pictures\color_chroma.png" />
     <None Remove="Media\Pictures\HueBridge.png" />
     <None Remove="Media\Pictures\HueColorScale.png" />
@@ -23,6 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Media\Pictures\arrow.png" />
     <Resource Include="Media\Pictures\color_chroma.png" />
     <Resource Include="Media\Pictures\HueBridge.png" />
     <Resource Include="Media\Pictures\HueColorScale.png" />
@@ -43,7 +45,7 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <None Update="Updater.exe">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
